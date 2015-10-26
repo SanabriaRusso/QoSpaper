@@ -1,0 +1,120 @@
+% function [Throughput, ThroughputFitted, maxAgThroughput, JFI, JFI_fit, JFImaxAg] = eca_qos(nodes, CWmin, load, ACnum)
+function [Throughput, throughputUpper] = eca_qos(nodes, CWmin)
+
+ACnum = 4;
+load = 1024;
+maxStages = [1 1 5 5];
+highStage = [0 0 0 0];
+lowStage = [0 0 0 0];
+aggregationLow = [0 0 0 0];
+aggregationHigh = [0 0 0 0];
+txAtLowStage = [0 0 0 0];
+txAtHighStage = [0 0 0 0];
+slotsInCycle = [CWmin/2 CWmin 2*CWmin 2*CWmin]; %available slots in the smallest cycle per AC
+slotsInLargeCycle = [CWmin/4, CWmin/8, CWmin/16, CWmin/16];
+tx = [nodes nodes nodes nodes];
+                                                             
+                     
+% Get out if there are too many nodes
+if sum(tx) > 2^maxStages(1)*(slotsInCycle(1))
+    fprintf('Too many transmissions for collision-free under saturation\n');
+    return;
+end
+
+if tx(1) <= slotsInLargeCycle(1)
+   for i = 1:ACnum
+      highStage(i) = 0;
+      lowStage(i) = 0;
+      txAtLowStage(i) = 0;
+      txAtHighStage(i) = tx(i);
+   end
+else
+    fprintf('There are nodes at different ba\n');
+    for i = 1:ACnum
+        highStage(i) = ceil(log2(tx(i)/slotsInLargeCycle(i)));
+        txAtHighStage(i) = tx(i) - (2^(highStage(i))*slotsInLargeCycle(i) - tx(i));
+        aggregationHigh(i) = highStage(i);
+        lowStage(i) = max(0, highStage(i)-1);
+        txAtLowStage(i) = tx(i) - txAtHighStage(i);
+        aggregationLow(i) = lowStage(i);
+    end
+end
+
+txAtLowStage
+lowStage
+txAtHighStage
+highStage
+
+% %Fixing the times according to Francesco's 
+SLOT_TIME = 9; %was 16
+PACKET_PAYLOAD = load;
+% % 
+% % %Frame duration according to Channel.hh in the simulator
+LDBPS = 256;
+TSYM = 4;
+blockAckframeduration = 32 + fix((16 + 256 + 6)/LDBPS) * TSYM;
+% % %Transmission duration for nodes at low backoff stage according to
+% % %Channel.hh in the simulator
+dataframedurationLowStage = [0 0 0 0];
+TsLow = [0 0 0 0];
+dataframedurationHighStage = [0 0 0 0];
+TsHigh = [0 0 0 0];
+Throughput = [0 0 0 0];
+TsHighUpper = [0 0 0 0];
+high = [0 0 0 0];
+ah = [2 4 8 2];
+bh = [1/2 2 4];
+ch = [1/2 2 4];
+dh = [1/4 1/2 2];
+eh = [0 0 2];
+
+low = [0 0 0 0];
+al = [1/2 2 4];
+bl = [1/2 1/2 2];
+cl = [1/4 1/2 2];
+dl = [1/4 1/4 1/2];
+el = [1/8];
+% 
+ for i = 1:ACnum
+     dataframedurationLowStage(i) = duration80211n(PACKET_PAYLOAD, aggregationLow(i), blockAckframeduration);
+     TsLow(i) = dataframedurationLowStage(i);
+     dataframedurationHighStage(i) = duration80211n(PACKET_PAYLOAD, aggregationHigh(i), blockAckframeduration);
+     TsHigh(i) = dataframedurationHighStage(i); 
+     TsHighUpper(i) = duration80211n(PACKET_PAYLOAD, maxStages(i), blockAckframeduration);
+ end
+
+ if(txAtLowStage > 0)
+    low(1) = (2^aggregationLow(1))*PACKET_PAYLOAD*8 / (TsLow(1)*txAtLowStage(1) + al(1)*TsHigh(1)*txAtHighStage(1) + bl(1)*TsLow(2)*txAtLowStage(2) + cl(1)*TsHigh(2)*txAtHighStage(2) + dl(1)*TsLow(3)*txAtLowStage(3) + el(1)*TsHigh(3)*txAtHighStage(3) + dl(1)*TsLow(4)*txAtLowStage(4) + el(1)*TsHigh(4)*txAtHighStage(4));
+    low(2) = (2^aggregationLow(2))*PACKET_PAYLOAD*8 / (al(2)*TsLow(1)*txAtLowStage(1) + TsHigh(1)*txAtHighStage(1) + TsLow(2)*txAtLowStage(2) + bl(2)*TsHigh(2)*txAtHighStage(2) + cl(2)*TsLow(3)*txAtLowStage(3) + dl(2)*TsHigh(3)*txAtHighStage(3) + cl(2)*TsLow(4)*txAtLowStage(4) + dl(2)*TsHigh(4)*txAtHighStage(4));
+    low(3) = (2^aggregationLow(3))*PACKET_PAYLOAD*8 / (al(3)*TsLow(1)*txAtLowStage(1) + bl(3)*TsHigh(1)*txAtHighStage(1) + cl(3)*TsLow(2)*txAtLowStage(2) + TsHigh(2)*txAtHighStage(2) + TsLow(3)*txAtLowStage(3) + dl(3)*TsHigh(3)*txAtHighStage(3) + TsLow(4)*txAtLowStage(4) + dl(3)*TsHigh(4)*txAtHighStage(4));
+    low(4) = (2^aggregationLow(4))*PACKET_PAYLOAD*8 / (al(3)*TsLow(1)*txAtLowStage(1) + bl(3)*TsHigh(1)*txAtHighStage(1) + cl(3)*TsLow(2)*txAtLowStage(2) + TsHigh(2)*txAtHighStage(2) + TsLow(3)*txAtLowStage(3) + dl(3)*TsHigh(3)*txAtHighStage(3) + TsLow(4)*txAtLowStage(4) + dl(3)*TsHigh(4)*txAtHighStage(4));
+ end                                   
+    high(1) = (2^aggregationHigh(1))*PACKET_PAYLOAD*8 / (ah(1)*TsLow(1)*txAtLowStage(1) + TsHigh(1)*txAtHighStage(1) + TsLow(2)*txAtLowStage(2) + bh(1)*TsHigh(2)*txAtHighStage(2) + ch(1)*TsLow(3)*txAtLowStage(3) + dh(1)*TsHigh(3)*txAtHighStage(3) + ch(1)*TsLow(4)*txAtLowStage(4) + dh(1)*TsHigh(4)*txAtHighStage(4));
+    high(2) = (2^aggregationHigh(2))*PACKET_PAYLOAD*8 / (ah(2)*TsLow(1)*txAtLowStage(1) + bh(2)*TsHigh(1)*txAtHighStage(1) + ch(2)*TsLow(2)*txAtLowStage(2) + TsHigh(2)*txAtHighStage(2) + TsLow(3)*txAtLowStage(3) + dh(2)*TsHigh(3)*txAtHighStage(3) + TsLow(4)*txAtLowStage(4) + dh(2)*TsHigh(4)*txAtHighStage(4));
+    high(3) = (2^aggregationHigh(3))*PACKET_PAYLOAD*8 / (ah(3)*TsLow(1)*txAtLowStage(1) + bh(3)*TsHigh(1)*txAtHighStage(1) + ch(3)*TsLow(2)*txAtLowStage(2) + dh(3)*TsHigh(2)*txAtHighStage(2) + eh(3)*TsLow(3)*txAtLowStage(3) + TsHigh(3)*txAtHighStage(3) + eh(3)*TsLow(4)*txAtLowStage(4) + TsHigh(4)*txAtHighStage(4));
+    high(4) = (2^aggregationHigh(4))*PACKET_PAYLOAD*8 / (ah(3)*TsLow(1)*txAtLowStage(1) + bh(3)*TsHigh(1)*txAtHighStage(1) + ch(3)*TsLow(2)*txAtLowStage(2) + dh(3)*TsHigh(2)*txAtHighStage(2) + eh(3)*TsLow(3)*txAtLowStage(3) + TsHigh(3)*txAtHighStage(3) + eh(3)*TsLow(4)*txAtLowStage(4) + TsHigh(4)*txAtHighStage(4));
+                                                        
+     
+% %Total throughput
+ for i = 1:ACnum
+     Throughput(i) = (high(i)*txAtHighStage(i) + low(i)*txAtLowStage(i)) * 1e6;
+ end
+ 
+% %Using the maximum backoff stage for each AC
+highUpper = [0 0 0 0];
+throughputUpper = [0 0 0 0]; 
+au = [1/2 2 64];
+bu = [1/64 1/32 32];
+
+highUpper(1) = (2^maxStages(1))*PACKET_PAYLOAD*8 / (tx(1)*TsHighUpper(1) + au(1)*tx(2)*TsHighUpper(2) + bu(1)*TsHighUpper(3) + bu(1)*TsHighUpper(4));
+highUpper(2) = (2^maxStages(2))*PACKET_PAYLOAD*8 / (au(2)*tx(1)*TsHighUpper(1) + tx(2)*TsHighUpper(2) + bu(2)*TsHighUpper(3) + bu(2)*TsHighUpper(4));
+highUpper(3) = (2^maxStages(3))*PACKET_PAYLOAD*8 / (au(3)*tx(1)*TsHighUpper(1) + bu(3)*tx(2)*TsHighUpper(2) + tx(3)*TsHighUpper(3) + tx(4)*TsHighUpper(4)); 
+highUpper(4) = (2^maxStages(4))*PACKET_PAYLOAD*8 / (au(3)*tx(1)*TsHighUpper(1) + bu(3)*tx(2)*TsHighUpper(2) + tx(3)*TsHighUpper(3) + tx(4)*TsHighUpper(4)); 
+
+
+
+for i = 1:ACnum
+     throughputUpper(i) = (highUpper(i)*tx(i)) * 1e6;
+end
+
+end

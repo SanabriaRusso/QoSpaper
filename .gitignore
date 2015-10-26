@@ -1,0 +1,8 @@
+*DS_Store
+figures/*.eps
+figures/*.txt
+figures/*.dat
+*.swp
+.dropbox
+*Icon\r*
+
