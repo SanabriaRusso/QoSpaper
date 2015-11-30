@@ -34,44 +34,75 @@ Additionally, Table~\ref{tab:mac-params} provides information about relevant PHY
 		\end{tabular}
 	\end{table}
 	
+	\begin{table}[t]
+		\centering
+		\caption{Updated CSMA/ECA$_{\text{QoS}}$ contention parameters for the simulations}
+		\label{tab:newQoSparams}
+		\begin{tabular}{|c|c|c|c|c|c|}
+			\hline
+			{\bfseries AC} & {\bfseries CW$_{\min}$} & {\bfseries CW$_{\max}$} & {\bfseries m} & {\bfseries lowest $B_{\text{d}}$} & {\bfseries highest $B_{\text{d}}$}\\
+			\hline
+			BK		       &	32				&		1024		  & 		5	&			15		        &		511\\
+			BE		       &	32				&		1024		  &		5	&			15		        &		511\\
+			VI		       &	16				&		512		  & 		5	&			7		        &		255\\
+			VO		       &	8				&		256		  & 		5	&			3		        &		127\\
+			Legacy	       &	32				&		1024		  & 		5	&			15		        &		511\\
+			\hline
+		\end{tabular}
+	\end{table}
+	
 Apart from the assumptions presented above, the followings provide details about the traffic source generator, channel conditions and overall scenarios to be evaluated. Then, simulation results for achieved throughput, number of collisions and time between successful transmissions are presented.
 
 \subsection{Simulation parameters}\label{subsect:simParams}
 \subsubsection{Traffic conditions}
-There are two main states regarding traffic generation in a node. The \emph{saturated} traffic condition refers to a node that always has a packet for transmission in its MAC queue. On the other hand, a \emph{non-saturated} node  can also empty its MAC queue and withdraw from the channel contention. These states do not fall far from reality, for instance, a node might be in saturation while it is performing a file transfer. But if instead the node is only uploading a short file, does nothing for a period of time and then continues to perform a voice call over the network, its traffic will be considered to be non-saturated over that period of time.
+There are two main scenarios regarding traffic generation in a node. The \emph{saturated} traffic condition refers to a node that always has a packet for transmission in its MAC queue. On the other hand, a \emph{non-saturated} node  can also empty its MAC queue and withdraw from the channel contention. These states do not fall far from reality, for instance, a node might be in saturation while it is performing a file transfer. But if instead the node is only uploading a short file, does nothing for a period of time and then continues to perform a voice call over the network, its traffic will be considered to be non-saturated over that period of time.
 
 In our simulator we mimic this behaviour by defining a packet arrival rate ($\Delta\text{P}$). To simulate a saturated network, for instance, we set $\Delta\text{P}$ in every node to the channel capacity. If non-saturated traffic is the goal, $\Delta\text{P}$ will be set to a value way below the system maximum aggregated throughput in order to induce periods of inactivity upon each node. After extensive tests, $\Delta\text{P}=2\text{Mbps}$ has proved to provide satisfactory results.
 
-The performance in non-saturation for EDCA and CSMA/ECA$_{\text{QoS}}$ will be greatly dependent on the share of $\Delta\text{P}$ each AC gets, that is, the percentage of generated traffic that is going to be assigned to each AC. These shares are denoted $\Delta\text{P}_{\text{AC}}$ and the ones presented in Table~\ref{tab:pacShares} comply with the desired scenario.
+The performance in non-saturation for EDCA and CSMA/ECA$_{\text{QoS}}$ will be greatly dependent on the share of $\Delta\text{P}$ each AC gets, that is, the percentage of generated traffic that is going to be assigned to each AC. These shares, denoted $\Delta\text{P}_{\text{AC}}$ are distributed in the following way: $\Delta\text{P}_{\text{BK}}=0.4\Delta\text{P}$, $\Delta\text{P}_{\text{BE}}=0.3\Delta\text{P}$, $\Delta\text{P}_{\text{VI}}=0.15\Delta\text{P}$ and $\Delta\text{P}_{\text{VO}}=0.15\Delta\text{P}$. These values comply with the desired scenario.
 
-	\begin{table}
-		\centering
-		\caption{Shares of $\Delta\text{P}$ to each AC}
-		\label{tab:pacShares}
-		\begin{tabular}{|c|c|}
-			\hline
-			{\bfseries AC} & {\bfseries $\Delta\text{P}_{\text{AC}}$}\\
-			\hline
-			BK	&	40\%\\
-			\hline
-			BE	&	30\%\\
-			\hline
-			VI	&	15\%\\
-			\hline
-			VO	&	15\%\\
-			\hline
-		\end{tabular}
-	\end{table}
+%	\begin{table}
+%		\centering
+%		\caption{Shares of $\Delta\text{P}$ to each AC}
+%		\label{tab:pacShares}
+%		\begin{tabular}{|c|c|}
+%			\hline
+%			{\bfseries AC} & {\bfseries $\Delta\text{P}_{\text{AC}}$}\\
+%			\hline
+%			BK	&	40\%\\
+%			\hline
+%			BE	&	30\%\\
+%			\hline
+%			VI	&	15\%\\
+%			\hline
+%			VO	&	15\%\\
+%			\hline
+%		\end{tabular}
+%	\end{table}
 	
 \subsubsection{Channel errors}
 The inability to receive an ACK frame is handled as a collision, both in EDCA and CSMA/ECA$_{\text{QoS}}$. This could happen due to channel imperfections preventing the receiver from decoding the transmissions. In order to simulate the effects of channel errors over the MAC protocol, we define the likelihood of a packet not being acknowledged, $P_e$. It affects every packet independently. That is, for every packet being transmitted we draw a number from a random variable $X\sim\mathcal{U}[0,1]$, if the number drawn is lower than $P_e$ the packet will not be acknowledged. In the case of an aggregation of several packets, it is considered a failed transmission only if all packets in the aggregation are affected negatively by $P_e$. A value of $P_e=0.1$ has been selected for the simulations.
 
 \subsubsection{Scenarios to test}
-In this work we propose two main scenarios: saturation and non-saturation. The non-saturation scenario will be composed of nodes with $\Delta\text{P}=2\text{Mbps}$. This is done in order to create a condition resembling a heterogeneous network.
+In this work we propose two main scenarios: saturation and non-saturation. The non-saturation scenario will be composed of nodes with $\Delta\text{P}=2\text{Mbps}$.
 
 %////////////////////////////////////////////////////////////////////////////////////
 %///////////////////////////////////////%Results%////////////////////////
 %///////////////////////////////////////////////////////////////////////////////////
+
+\begin{figure*}[tb]
+	\centering
+		\includegraphics[width=0.55\linewidth,angle = -90]{figures/multiplot-sat-perfect.eps}
+		\caption{Average Aggregated Throughput and Collisions for a) EDCA, b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ in saturation with parameters from Table~\ref{tab:newQoSparams}}
+		\label{fig:multiplotSat}
+\end{figure*}
+
+\begin{figure*}[tb]
+	\centering
+		\includegraphics[width=0.55\linewidth,angle = -90]{figures/multiplot-unsat-error-0-1.eps}
+		\caption{Average Aggregated Throughput, Collisions and Time Between Successful Transmissions for a) EDCA and b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ network (without Fair Share) in non-saturation}
+		\label{fig:multiplotUnsat}
+\end{figure*}
 
 
 \subsection{Simulation Results}\label{sim:results}
@@ -80,13 +111,6 @@ In this work we propose two main scenarios: saturation and non-saturation. The n
 \item\underline{Saturation:} Figure~\ref{fig:multiplotSat} gathers the simulation results for average aggregated throughput and collisions in a saturated network. Referring to EDCA results as Figure~\ref{fig:multiplotSat}-a,  it shows that the AC with the highest priority, AC[VO]\footnote{Starting at this point, ACs will be referred to as AC[\emph{x}], where `\emph{x}' is the abbreviation of the AC name, as in Table~\ref{tab:prioritiesMap}.}, achieves greater throughput than the others. This is a direct consequence of effective traffic differentiation in EDCA. The lower row of Figure~\ref{fig:multiplotSat} shows the total number of collisions as well as the average percentage of collisions suffered by each AC. 
 
 Figure~\ref{fig:multiplotSat}-a also shows that AC[BK] is not able to provide significant throughput for a high number of contenders. This is because its transmission attempts are being deferred in order to serve the high priority ACs. Furthermore, EDCA collisions show that at around 30 contenders AC[BE] also starts to get its transmission attempts deferred, easing the contention process for high priority ACs. This is the main reason of the overall throughput increase seen in Figure~\ref{fig:multiplotSat}-a at around 30 nodes.
-
-\begin{figure*}[tb]
-	\centering
-		\includegraphics[width=0.55\linewidth,angle = -90]{figures/multiplot-sat-perfect.eps}
-		\caption{Average aggregated throughput and Collisions for a) EDCA, b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ with parameters from Table~\ref{tab:newQoSparams}}
-		\label{fig:multiplotSat}
-\end{figure*}
 
 %\begin{figure}[tb]
 %	\centering
@@ -115,23 +139,6 @@ Figure~\ref{fig:multiplotSat}-a also shows that AC[BK] is not able to provide si
 %		\caption{Collisions in an CSMA/ECA$_{\text{QoS}}$ network in saturation using default contention parameters (see Table~\ref{tab:ecaQosParams})}
 %		\label{fig:collisionsSatECA}
 %	\end{figure}
-	
-	\begin{table}[tb!]
-		\centering
-		\caption{Updated CSMA/ECA$_{\text{QoS}}$ contention parameters for the simulations}
-		\label{tab:newQoSparams}
-		\begin{tabular}{|c|c|c|c|c|c|}
-			\hline
-			{\bfseries AC} & {\bfseries CW$_{\min}$} & {\bfseries CW$_{\max}$} & {\bfseries m} & {\bfseries lowest $B_{\text{d}}$} & {\bfseries highest $B_{\text{d}}$}\\
-			\hline
-			BK		       &	32				&		1024		  & 		5	&			16		        &		512\\
-			BE		       &	32				&		1024		  &		5	&			16		        &		512\\
-			VI		       &	16				&		512			  & 		5	&			8		        &		256\\
-			VO		       &	8				&		256			  & 		5	&			4		        &		128\\
-			Legacy	       &	32				&		1024		  & 		5	&			16		        &		512\\
-			\hline
-		\end{tabular}
-	\end{table}
 
 Figure~\ref{fig:multiplotSat}-b shows the average aggregated throughput and collisions of a saturated CSMA/ECA$_{\text{QoS}}$ network using the default contention parameters (see Table~\ref{tab:ecaQosParams}). These settings do not allow the construction of collision-free schedules for many contenders. This is evidenced by the high number of collisions at around 20 contenders. Moreover, the figure shows CSMA/ECA$_{\text{QoS}}$ throughput decreasing faster than EDCA.
 
@@ -172,12 +179,6 @@ In the non-saturation scenario, nodes in the network have $\Delta\text{P}=2$Mbps
 
 Figure~\ref{fig:multiplotUnsat} shows the (from top to bottom row) average aggregated throughput, collisions and time between successful transmissions for (from left to right column) a) EDCA, b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ without Fair Share. In Figure~\ref{fig:multiplotUnsat}-a, EDCA throughput keeps increasing up until one of its ACs reaches saturation due to starvation. This is the case of AC[BK] at around $N=10$. It is only at around $N=24$ where the rest of ACs get completely saturated, and both figures start to resemble the ones presented in the saturation case.
 
-\begin{figure*}[tb]
-	\centering
-		\includegraphics[width=0.55\linewidth,angle = -90]{figures/multiplot-unsat-error-0-1.eps}
-		\caption{Average aggregated throughput, Collisions and time between successful transmissions for a) EDCA and b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ network (without Fair Share)}
-		\label{fig:multiplotUnsat}
-\end{figure*}
 %
 %
 %
