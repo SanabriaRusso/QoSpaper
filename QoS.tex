@@ -17,6 +17,7 @@
 %\usepackage{subcaption}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{flushend}
 
 %Put the references in a nice way so the empty space is not overly great.
 %\usepackage{flushend}
@@ -101,9 +102,10 @@ An overview of the traffic differentiation techniques in EDCA will be provided i
 \input{performanceEv}
 
 \section{Conclusions}\label{section5}
-EDCA is able of providing effective traffic differentiation in WLANs. It does so instantiating DCF for each of its four supported MAC queues, or Access Categories (AC), and defining different contention and transmission parameters that allow an statistical differentiation among them. The proposed CSMA/ECA$_{\text{QoS}}$, is also a totally distributed MAC protocol for WiFi. It is able of providing traffic differentiation even for a high number of contenders. It does so by instructing nodes to pick a deterministic backoff counter after successful transmissions. These counters are based on the contention parameters in order to provide differentiation among the ACs.
+EDCA is able of providing effective traffic differentiation in WLANs. It does so instantiating DCF for each of its four supported MAC queues, or Access Categories (AC), and defining different contention and transmission parameters that allow an statistical differentiation among them. 
+%The proposed CSMA/ECA$_{\text{QoS}}$, is also a totally decentralised MAC protocol for WiFi. It is able of providing traffic differentiation even for a high number of contenders. It does so by instructing nodes to pick a deterministic backoff counter after successful transmissions. These counters are based on the contention parameters in order to provide differentiation among the ACs.
 
-Results highlight EDCA's difficulties to serve many contenders with multiple ACs. Its contention mechanism, being based on a random backoff, is in principle unable to eliminate collisions that degrade the overall performance of the network. Further, strict differentiation techniques like AIFS, and the additional transmission deferrals due to Virtual Collisions starve low-priority ACs in terms of throughput.
+Results highlight EDCA's problems at serving many contenders with multiple ACs. Specifically, its contention mechanism being based on a random backoff is in principle unable to eliminate collisions that degrade the overall performance of the network. Further, strict differentiation techniques like AIFS, and the additional transmission deferrals due to Virtual Collisions starve low-priority ACs in terms of throughput.
 
 CSMA/ECA$_{\text{QoS}}$ is able to construct collision-free periods that provide an overall throughput increase, while still providing traffic differentiation. Moreover, CSMA/ECA$_{\text{QoS}}$ is able to bring traffic differentiation to crowded networks without killing the throughput of low priority ACs, as EDCA does. Further, because both protocols use similar contention parameters, CSMA/ECA$_{\text{QoS}}$ can coexist with EDCA nodes in the same network and still enjoy higher throughput and traffic differentiation.
 

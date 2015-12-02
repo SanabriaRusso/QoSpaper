@@ -10,6 +10,8 @@ Carrier Sense Multiple Access with Enhanced Collision Avoidance~\cite{sanabria20
 	
 To attempt a transmission, stations generate a random backoff $B\leftarrow\mathcal{U}[0,CW_{\min}-1]$, just as in DCF. Every passing empty slot decrements $B$ in one. When $B=0$, the station will attempt a transmission. If the transmission fails, the node will increment its backoff stage $k\in[0,m]$ in one (where $m$ is the maximum backoff stage of typical value $m=5$) and use another random backoff $B\leftarrow\mathcal{U}[0,CW(k)-1]$; where $CW(k)=2^{k}CW_{\min}$ is the contention window at backoff stage $k$. Otherwise, the successful station will then pick a deterministic backoff for its next transmission, $B_{\text{d}}\leftarrow \lceil CW_{\min}/2\rceil-1$. This value of $B_{\text{d}}$ is roughly equal to the expectation of a random backoff at the same backoff stage ($k=0$, in this case), making it fair and compatible with CSMA/CA stations~\cite{research2standards}.
 
+\subsection{Supporting many more contenders with Hysteresis, Fair Share and the Schedule Reset mechanism}\label{scheduleReset}
+
 CSMA/ECA is also capable of allocating many contenders in a collision-free schedule by not reseting the backoff stage $k$ after a successful transmission, as opposed to CSMA/CA. That is, a node at backoff stage $k$ would select $B_{\text{d}}\leftarrow \lceil CW(k)/2\rceil-1$ as its deterministic backoff after a successful transmission. This extension to CSMA/ECA is called Hysteresis. 
 
 Hysteresis forces some contenders to have larger schedules than others, resulting in an unfair distribution of the network resources. This effect can be compensated by allowing nodes at backoff stage $k$ to transmit $2^{k}$ packets upon each transmission attempt. We call this extension Fair Share and it ensures an even distribution of the available throughput among contenders.
@@ -158,7 +160,6 @@ CSMA/ECA with Hysteresis and Fair Share (CSMA/ECA$_{\text{Hys+FS}}$) is able to 
 
 The main difference between Algorithm~\ref{alg:DCF} and Algorithm~\ref{alg:ECA}, and therefore between CSMA/CA and CSMA/ECA$_{\text{Hys+FS}}$ is that the latter uses a deterministic backoff after a successful transmission. This difference is highlighted at line~\ref{randomBackoff} and line~\ref{deterministicBackoff} of Algorithms~\ref{alg:DCF} and~\ref{alg:ECA}, respectively.
 
-\subsection{Schedule Reset mechanism}\label{scheduleReset}
 CSMA/ECA$_{\text{Hys+FS}}$ instructs nodes not to reset their backoff stage after a successful transmission. This is done in order to increase the cycle length and provide a collision-free schedule for many contenders, which is desirable in dense scenarios.
 
 %The increment of the backoff stage and consequently the enlargement of the deterministic backoff are the result of previous collisions. In WLANs, collisions are assumed when the transmitter does not receive an Acknowledgement (ACK) packet from the receiver after a SIFS period following the transmission of the data frame. This means that channel imperfections preventing the reception of ACKs would be assumed as collisions by the senders, therefore, will also provoke an increase on the deterministic backoff in CSMA/ECA$_{\text{Hys+FS}}$.
@@ -184,14 +185,14 @@ Schedule Reset (SR) is implemented in CSMA/ECA$_{\text{Hys+FS}}$ by filling a bi
 
 It is possible to configure Schedule Reset in two modes, namely \emph{conservative} and \emph{aggressive}. These modes relate to the number of consecutive transmissions needed to evaluate the bitmap, that is, $\gamma$. A conservative SR contains the information of all users' transmissions, therefore no additional collisions are introduced as a consequence of the schedule change. This implies a value of $\gamma=2^{m-1}CW_{\min}/B_{\text{d}}$. On the other hand, setting $\gamma=1$ triggers a bitmap evaluation after just two consecutive transmissions, rendering this choice of $\gamma$ the aggressive mode.
 
-Aggressive Schedule Reset coupled with an increase in the Stickiness has proven to be suitable for noisy scenarios~\cite{sanabria2014high}. Stickiness is not a new concept to CSMA/ECA~\cite{barcelo2011tcf}. It simply instructs the contender to \emph{stick} to the deterministic backoff even in the event of \emph{stickiness} number of failed transmissions. This allows for a faster convergence towards a collision-free schedule. CSMA/ECA$_{\text{QoS}}$ with a default level of stickiness equal to $2$ has proven to provide the better combination of high throughput and low collisions, as shown in Figure~\ref{fig:stickEv-throughput-overallOnly}. 
-
 \begin{figure}[tb]
 	\centering
 		\includegraphics[width=0.7\linewidth, angle=-90]{figures/stickEv-throughput-overallOnly.eps}
 		\caption{Average throughput and collisions with different levels of stickiness for CSMA/ECA$_{\text{QoS}}$ in non-saturation conditions (as explained in Section~\ref{subsect:simParams})}
 		\label{fig:stickEv-throughput-overallOnly}
 	\end{figure}
+
+Aggressive Schedule Reset coupled with an increase in the Stickiness after an effective schedule change has proven to be suitable for noisy scenarios~\cite{sanabria2014high}, and the one used to provide the simulation results in Section~\ref{section4}. Stickiness is not a new concept to CSMA/ECA~\cite{barcelo2011tcf}. It simply instructs the contender to \emph{stick} to the deterministic backoff even in the event of \emph{stickiness} number of failed transmissions. This allows for a faster convergence towards a collision-free schedule. CSMA/ECA$_{\text{QoS}}$ with a default level of stickiness equal to $2$ has proven to provide the better combination of high throughput and low collisions, as shown in Figure~\ref{fig:stickEv-throughput-overallOnly}. Simulations results presented in Section~\ref{section4} imply an increase from ${\texttt{stickiness}}=2$ to ${\texttt{stickiness}}=3$ after a successful Schedule Reset.
 
 %The Schedule Reset mechanism is activated after a complete schedule with a deterministic backoff, that is, the contender has performed $B_{d}/C$ successful transmissions, where $C$ is the number of slots in a complete schedule (like the exemplified in Section~\ref{ECAqosCollisionFree}).
 
