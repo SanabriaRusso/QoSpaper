@@ -1,12 +1,13 @@
 \section{Traffic Differentiation with CSMA/ECA}\label{section3}
-Carrier Sense Multiple Access with Enhanced Collision Avoidance~\cite{sanabria2014high, research2standards} is able to build collision-free schedules by using a deterministic backoff after successful transmissions. That is, if all saturated contenders are able to perform a successful transmission and then pick a deterministic backoff, they will not collide among each other in future transmissions.
 
-	\begin{figure*}[tb]
-	\centering
-		\includegraphics[width=0.8\linewidth]{figures/csma_eca_different_backoff_short.eps}
-		\caption{An example of the temporal evolution of CSMA/ECA in saturation}
-		\label{fig:ECA}
-	\end{figure*}
+\begin{figure*}[t!]
+\centering
+	\includegraphics[width=0.8\linewidth]{figures/csma_eca_different_backoff_short.eps}
+	\caption{An example of the temporal evolution of CSMA/ECA in saturation}
+	\label{fig:ECA}
+\end{figure*}
+	
+Carrier Sense Multiple Access with Enhanced Collision Avoidance~\cite{sanabria2014high, research2standards} is able to build collision-free schedules by using a deterministic backoff after successful transmissions. That is, if all saturated contenders are able to perform a successful transmission and then pick a deterministic backoff, they will not collide among each other in future transmissions.
 	
 To attempt a transmission, stations generate a random backoff $B\leftarrow\mathcal{U}[0,CW_{\min}-1]$, just as in DCF. Every passing empty slot decrements $B$ in one. When $B=0$, the station will attempt a transmission. If the transmission fails, the node will increment its backoff stage $k\in[0,m]$ in one (where $m$ is the maximum backoff stage of typical value $m=5$) and use another random backoff $B\leftarrow\mathcal{U}[0,CW(k)-1]$; where $CW(k)=2^{k}CW_{\min}$ is the contention window at backoff stage $k$. Otherwise, the successful station will then pick a deterministic backoff for its next transmission, $B_{\text{d}}\leftarrow \lceil CW_{\min}/2\rceil-1$. This value of $B_{\text{d}}$ is roughly equal to the expectation of a random backoff at the same backoff stage ($k=0$, in this case), making it fair and compatible with CSMA/CA stations~\cite{research2standards}.
 
@@ -20,19 +21,6 @@ Figure~\ref{fig:ECA} shows a temporal example of CSMA/ECA with its extensions, n
 
 CSMA/ECA with Hysteresis and Fair Share (CSMA/ECA$_{\text{Hys+FS}}$) is able to outperform CSMA/CA, as shown in the simulation results presented in Figures~\ref{fig:CAvsECA} and~\ref{fig:col-CAvsECA}. For the sake of clarity, Algorithm~\ref{alg:DCF} and Algorithm~\ref{alg:ECA} exemplify CSMA/CA and CSMA/ECA$_{\text{Hys+FS}}$ respectively.
 
-	\begin{figure}[tb]
-	\centering
-		\includegraphics[width=0.7\linewidth, angle=-90]{figures/throughput-perfectChannel.eps}
-		\caption{Average aggregated throughput ($CW_{\min}=32$)\cite{sanabria2014high}}
-		\label{fig:CAvsECA}
-	\end{figure}
-	
-	\begin{figure}[tb]
-	\centering
-		\includegraphics[width=0.7\linewidth, angle=-90]{figures/collisions-perfectChannel.eps}
-		\caption{Average aggregated number of collision slots ($CW_{\min}=32$)\cite{sanabria2014high}}
-		\label{fig:col-CAvsECA}
-	\end{figure}
 
 	\begin{algorithm}[t]
 	\While{the device is on}
@@ -117,47 +105,6 @@ CSMA/ECA with Hysteresis and Fair Share (CSMA/ECA$_{\text{Hys+FS}}$) is able to 
 	\label{alg:ECA}
 	\end{algorithm}
 	
-%	\begin{algorithm}[tb]
-%	\While{the device is on}
-%	{
-%	  $r \leftarrow 0$ ; $k \leftarrow 0$\;
-%	  $b \leftarrow \mathcal{U}[0,2^k\rm{CW}_{min}-1]$\;
-%	  \While{there is a packet to transmit}{
-%	    %\tcc{Initialize $a$.}
-%	    \Repeat{($r = R$) or (success)}{
-%	      %\tcc{First, backoff.}
-%	      \While{$B>0$}{
-%	        wait 1 slot\;
-%	        $B \leftarrow B-1$\;
-%	      }
-%	      \colorbox{yellow}{Attempt transmission of $2^k$ packets;}\\
-%	      \If{collision}{
-%	        %\tcc{Random backoff.}
-%	        $r \leftarrow r+1$\;
-%	        $k \leftarrow \min (k+1,m)$\;
-%	        $B \leftarrow \mathcal{U}[0, 2^k  \rm{CW}_{min} -1]$\;
-%	      }
-%	    }
-%	    $r \leftarrow 0$\;
-%	    %$s \leftarrow 0$\;
-%	    \eIf{success}{
-%	      %\tcc{Random backoff.}
-%	      \colorbox{yellow}{$B_{\text{d}} \leftarrow (2^{k}\rm{CW}_{min})/2-1$;}\\\label{deterministicBackoff}
-%		$B \leftarrow B_{\text{d}}$;\\
-%	    }
-%	    {
-%	      Discard packet\;
-%	       \colorbox{yellow}{$k \leftarrow 0$}\label{eca:stageReset}\;
-%	      $B \leftarrow \mathcal{U}[0, 2^k \rm{CW}_{min}-1]$\;
-%	    }
-%	  }
-%	  Wait until there is a packet to transmit\;
-%	}
-%	\vspace{0.2cm}
-%	\caption{CSMA/ECA$_{\text{Hys+FS}}$}
-%	\label{alg:ECA}
-%	\end{algorithm}
-
 The main difference between Algorithm~\ref{alg:DCF} and Algorithm~\ref{alg:ECA}, and therefore between CSMA/CA and CSMA/ECA$_{\text{Hys+FS}}$ is that the latter uses a deterministic backoff after a successful transmission. This difference is highlighted at line~\ref{randomBackoff} and line~\ref{deterministicBackoff} of Algorithms~\ref{alg:DCF} and~\ref{alg:ECA}, respectively.
 
 CSMA/ECA$_{\text{Hys+FS}}$ instructs nodes not to reset their backoff stage after a successful transmission. This is done in order to increase the cycle length and provide a collision-free schedule for many contenders, which is desirable in dense scenarios.
@@ -165,6 +112,21 @@ CSMA/ECA$_{\text{Hys+FS}}$ instructs nodes not to reset their backoff stage afte
 %The increment of the backoff stage and consequently the enlargement of the deterministic backoff are the result of previous collisions. In WLANs, collisions are assumed when the transmitter does not receive an Acknowledgement (ACK) packet from the receiver after a SIFS period following the transmission of the data frame. This means that channel imperfections preventing the reception of ACKs would be assumed as collisions by the senders, therefore, will also provoke an increase on the deterministic backoff in CSMA/ECA$_{\text{Hys+FS}}$.
 
 Having a big deterministic backoff increases the time between successful transmissions. Furthermore, if not operating in a scenario with many nodes the empty slots between transmissions are not longer negligible and degrade the overall throughput of the system. For instance, if nodes withdraw from the contention their previously used slots will now be empty. Contenders should be aware of this issue and pursue opportunities to reduce their deterministic backoff without sacrificing too much in collisions. 
+
+	\begin{figure}[t!]
+	\centering
+		\includegraphics[width=0.7\linewidth, angle=-90]{figures/throughput-perfectChannel.eps}
+		\caption{Average aggregated throughput ($CW_{\min}=32$)\cite{sanabria2014high}}
+		\label{fig:CAvsECA}
+	\end{figure}
+	
+	\begin{figure}[t!]
+	\centering
+		\includegraphics[width=0.7\linewidth, angle=-90]{figures/collisions-perfectChannel.eps}
+		\caption{Average aggregated number of collision slots ($CW_{\min}=32$)\cite{sanabria2014high}}
+		\label{fig:col-CAvsECA}
+	\end{figure}
+
 
 The \emph{Schedule Reset} mechanism for CSMA/ECA$_{\text{Hys+FS}}$ introduced in~\cite{sanabria2014high} consists on finding the smallest collision-free schedule between a contender's transmissions and then change the node's deterministic backoff to fit in that schedule. Take a contender with a $B_{\text{d}}=31$ as an example. By listening to the slots between its transmissions, we are able to determine the availability of smaller (and possibly) collision-free schedules. 
 
@@ -174,7 +136,7 @@ Figure~\ref{fig:scheduleReset1} shows the slots between the transmissions of a c
 
 %\footnote{Trailing waiting periods, like the SIFS, are composed of empty slots. These allow nodes to decrement their backoff counters even after a collision or successful slots. Without loss of generality, the stations in our examples and simulations decrement their respective backoff counters by one after these kind of slots (see example in Figures~\ref{fig:ECA} and~\ref{fig:ecaQoS}).}
 
-	\begin{figure}[tb]
+	\begin{figure}[t!]
 	\centering
 		\includegraphics[width=\linewidth]{figures/scheduleReset.pdf}
 		\caption{Example of the Schedule Reset mechanism (extracted from~\cite{sanabria2014high})}
@@ -234,7 +196,7 @@ Consider a complete schedule of length $C=2^{m}CW_{\min}$, and $m=5$. With CSMA/
 
 VCs in CSMA/ECA$_{\text{QoS}}$ force ACs to defer their transmissions using a random backoff. Therefore, VCs can disrupt any existent collision-free schedule in CSMA/ECA$_{\text{QoS}}$, wasting channel time recovering from collisions and degrading the overall throughput. Given that all AC's backoff counters are known to the contender, there is nothing preventing it from using this information to avoid future VCs.
 
-CSMA/ECA$_{\text{QoS}}$ eliminates VCs by picking a $B[\text{AC}]$ that is not equal to any of the other AC's counters. This is exemplified in Figure~\ref{fig:smartBackoff1}. The figure shows a contender with four ACs and $B_{\text{d}}[4]=[4,8,16,16]$, for AC1 to AC4 respectively. AC1 effectively transmits, but AC3 suffers from a VC. It then selects a random backoff, $B[\text{AC3}]=24$, which is different from any other AC's counters. Then, to eliminate future VCs in CSMA/ECA$_{\text{QoS}}$ the successes of other ACs's transmissions should also be taken into account. This is achieved by selecting a number whose absolute difference with each of the other AC's counters is not a multiple of each comparison's smallest deterministic backoff. Algorithm~\ref{alg:smartBackoff} shows the process of selecting what is referred to as a \emph{Smart Backoff} in CSMA/ECA$_{\text{QoS}}$. It shows four ACs, although it can used to eliminate VCs with as many ACs as needed. Smart Backoff is used instead of a random backoff in CSMA/ECA$_{\text{QoS}}$.
+CSMA/ECA$_{\text{QoS}}$ eliminates VCs by picking a $B[\text{AC}]$ that is not equal to any of the other AC's counters. This is exemplified in Figure~\ref{fig:smartBackoff1}. The figure shows a contender with four ACs and $B_{\text{d}}[4]=[4,8,16,16]$, for AC1 to AC4 respectively. AC1 effectively transmits, but AC3 suffers from a VC. It then selects a random backoff, $B[\text{AC3}]=24$, which is different from any other AC's counters but do not consider the deterministic backoff selected by successful ACs. To eliminate future VCs in CSMA/ECA$_{\text{QoS}}$ the successes of other ACs's transmissions should also be taken into account. This is achieved by selecting a number whose absolute difference with each of the other AC's counters is not a multiple of each comparison's smallest deterministic backoff. Algorithm~\ref{alg:smartBackoff} shows the process of selecting what is referred to as a \emph{Smart Backoff} in CSMA/ECA$_{\text{QoS}}$. It shows four ACs, although it can used to eliminate VCs with as many ACs as needed. Smart Backoff is used instead of a random backoff in CSMA/ECA$_{\text{QoS}}$.
 
 %Nevertheless, because CSMA/ECA$_{\text{QoS}}$ ACs use a deterministic backoff after successful transmissions the selected $B[\text{AC3}]$ will eventually collide with AC1's next sixth successful transmission.
 
@@ -274,7 +236,7 @@ CSMA/ECA$_{\text{QoS}}$ eliminates VCs by picking a $B[\text{AC}]$ that is not e
 		\label{alg:smartBackoff}
 	\end{algorithm}
 
-What results from Algorithm~\ref{alg:smartBackoff} is a Smart Backoff counter that will not cause a VC on the next transmission attempts while in saturation.
+What results from Algorithm~\ref{alg:smartBackoff} is a Smart Backoff counter that will not cause a VC on the next transmission attempts.
 
 	\begin{table}[tb]
 		\centering
@@ -286,8 +248,8 @@ What results from Algorithm~\ref{alg:smartBackoff} is a Smart Backoff counter th
 			\hline
 			BK		       &	32				&		1024		  & 		5	&			15		        &		511\\
 			BE		       &	32				&		1024		  &		5	&			15		        &		511\\
-			VI		       &	16				&		32		  & 		1	&			7		        &		15\\
-			VO		       &	8				&		16		  & 		1	&			3		        &		7\\
+			VI		       &	16				&		32			  & 		1	&			7		        &		15\\
+			VO		       &	8				&		16		 	 & 		1	&			3		        &		7\\
 			Legacy	       &	32				&		1024		  & 		5	&			15		        &		511\\
 			\hline
 		\end{tabular}

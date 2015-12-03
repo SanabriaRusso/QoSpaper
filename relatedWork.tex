@@ -37,7 +37,7 @@ EDCA extends directly from DCF. In its place, EDCA declares up to four Access Ca
 		\end{tabular}
 	\end{table}
 	
-Every backlogged AC joins the contention for the channel by drawing a random backoff, $B[\text{AC}]\leftarrow\mathcal{U}[0,CW_{\min}[\text{AC}]-1]$; where $CW_{\min}[\text{AC}]$ is the minimum contention window for said AC. Each AC waits for a fixed $AIFS[\text{AC}]=SIFS\footnote{The Short Inter-Frame Space (SIFS) is defined in~\cite{802Standards}. It is equal to 10 or 16$\mu$s for 802.11 n and ac respectively.}+\sigma_{e}(AIFSN[\text{AC}])$ period of inactivity in the channel and then starts decrementing its random backoff. Each passing empty slot decrements $B[\text{AC}]$ in one. When the backoff counter expires ($B[\text{AC}] = 0$), the AC will attempt transmission. Table~\ref{tab:EDCAparams} shows the default CW, AIFSN and TXOP values specified for EDCA. 
+Every backlogged AC joins the contention for the channel by drawing a random backoff, $B[\text{AC}]\leftarrow\mathcal{U}[0,CW_{\min}[\text{AC}]-1]$; where $CW_{\min}[\text{AC}]$ is the minimum contention window for said AC. Each AC waits for a fixed $AIFS[\text{AC}]=SIFS\footnote{The Short Inter-Frame Space (SIFS) is defined in~\cite{802Standards}. It is equal to 10 or 16$\mu$s for 802.11 n and ac respectively.}+\sigma_{e}(AIFSN[\text{AC}]-1)$ period of inactivity in the channel and then starts decrementing its random backoff. Each passing empty slot decrements $B[\text{AC}]$ in one. When the backoff counter expires ($B[\text{AC}] = 0$), the AC will attempt transmission. Table~\ref{tab:EDCAparams} shows the default CW, AIFSN and TXOP values specified for EDCA. 
 
 	\begin{table}[t]
 		\centering
@@ -60,7 +60,7 @@ Every backlogged AC joins the contention for the channel by drawing a random bac
 		\end{tabular}
 	\end{table}
 
-As it can be observed in Table~\ref{tab:EDCAparams}, ACs BK and BE may only send one MAC Service Data Unit (MSDU) upon each attempt. Whereas VI and VO can allocate the channel for longer periods. The TXOP parameter offers resource fairness rather than throughput fairness, that is, all ACs of the same category will receive close to the same average channel time regardless of its data rate. Furthermore, because the CW and AIFSN values for VI and VO are smaller than the others's, on average these ACs will access the channel quicker; thus providing priority in the contention. The relative AIFSN lengths for each AC are shown in Fig.~\ref{fig:AIFSN}.
+As it can be observed in Table~\ref{tab:EDCAparams}, ACs BK and BE may only send one MAC Service Data Unit (MSDU) upon each attempt. Whereas VI and VO can allocate the channel for longer periods. The TXOP parameter offers resource fairness rather than throughput fairness, that is, all ACs of the same category will receive close to the same average channel time regardless of its data rate. Furthermore, because the CW and AIFSN values for VI and VO are smaller than the others, on average these ACs will access the channel quicker; thus providing priority in the contention. The relative AIFSN lengths for each AC are shown in Fig.~\ref{fig:AIFSN}.
 
 	\begin{figure}[t]
 	\centering
@@ -76,7 +76,4 @@ It follows directly from above that collisions waste channel time and thus contr
 \subsection{Other contributions}
 Because ACs in EDCA perform contention independently of the others, each AC mimics a station. This explains why the collision probability in EDCA is higher than in single-AC DCF networks with the same number of nodes. Furthermore, the contention parameters in EDCA work better in scenarios with low number of contenders, but often cause starvation of low priority ACs in crowded scenarios (see~\cite{990806} and Section~\ref{sim:results}).
 
-Therefore, great efforts have been directed towards parameter adjustments in EDCA~\cite{throughputGuarantees,6614899,4594854}. For example, by dynamically adjusting the AIFS for each AC it is possible to maintain traffic differentiation while avoiding the starvation of low priority ACs. This is especially relevant in WLANs where medical-grade QoS is desired~\cite{6614899}. Further, by randomising the AIFS values it is possible to increase the channel utilisation in EDCA~\cite{4594854}. Nevertheless, all these approaches either require information about the number of nodes participating in the contention, or inject additional traffic to the network, which may be unsuitable in crowded scenarios.
-
-
-
+Therefore, great efforts have been directed towards parameter adjustments in EDCA~\cite{throughputGuarantees,6614899,4594854}. For example, by dynamically adjusting the AIFS for each AC it is possible to maintain traffic differentiation while avoiding the starvation of low priority ACs. This is especially relevant in WLANs where all ACs are required to have effective throughput, like in~\cite{6614899}. Further, by randomising the AIFS values it is possible to increase the channel utilisation in EDCA~\cite{4594854}. Nevertheless, all these approaches either require information about the number of nodes participating in the contention, or inject additional traffic to the network, which may be unsuitable for crowded scenarios.
