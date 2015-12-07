@@ -2,7 +2,7 @@
 
 \begin{figure*}[t!]
 \centering
-	\includegraphics[width=0.8\linewidth]{figures/csma_eca_different_backoff_short.eps}
+	\includegraphics[width=0.9\linewidth]{figures/csma_eca_different_backoff_short.eps}
 	\caption{An example of the temporal evolution of CSMA/ECA in saturation}
 	\label{fig:ECA}
 \end{figure*}
@@ -21,8 +21,10 @@ Figure~\ref{fig:ECA} shows a temporal example of CSMA/ECA with its extensions, n
 
 CSMA/ECA with Hysteresis and Fair Share (CSMA/ECA$_{\text{Hys+FS}}$) is able to outperform CSMA/CA, as shown in the simulation results presented in Figures~\ref{fig:CAvsECA} and~\ref{fig:col-CAvsECA}. For the sake of clarity, Algorithm~\ref{alg:DCF} and Algorithm~\ref{alg:ECA} exemplify CSMA/CA and CSMA/ECA$_{\text{Hys+FS}}$ respectively.
 
-
-	\begin{algorithm}[t]
+\begin{center}
+\begin{minipage}{1.1\linewidth}
+\begin{minipage}{0.45\linewidth}
+	\begin{algorithm}[H]
 	\While{the device is on}
 	{
 	  %\tcc{Initialize retransmission attempts.}
@@ -58,11 +60,13 @@ CSMA/ECA with Hysteresis and Fair Share (CSMA/ECA$_{\text{Hys+FS}}$) is able to 
 	  }
 	  Wait until there is a packet to transmit\;
 	}
-	\caption{\small{CSMA/CA. $r$ indicates the number of retransmission attempts, while $R$ is the maximum retransmission attempts limit. When it is reached, the packet waiting for transmission is dropped.}}
+	\vspace{0.2cm}
+	\caption{\small{CSMA/CA. $r$ indicates the number of retransmission attempts, while $R$ is the maximum retransmission attempts limit. When it is reached, the packet waiting for transmission is dropped}}
 	\label{alg:DCF}
 	\end{algorithm}
-
-	\begin{algorithm}[t]
+\end{minipage}%
+\begin{minipage}{0.45\linewidth}
+	\begin{algorithm}[H]
 	\While{the device is on}
 	{
 	  $r \leftarrow 0$ ; $k \leftarrow 0$ ; $k_{c} \leftarrow k$\;
@@ -104,6 +108,10 @@ CSMA/ECA with Hysteresis and Fair Share (CSMA/ECA$_{\text{Hys+FS}}$) is able to 
 	\caption{CSMA/ECA$_{\text{Hys+FS}}$: $k_{c}$ refers to the contention backoff stage, that is, the backoff stage with which a contention for transmission is started. After $R$ retransmission attempts, Fair Share instructs the node to drop $2^{k_{c}}$ packets}
 	\label{alg:ECA}
 	\end{algorithm}
+\end{minipage}
+\end{minipage}
+\end{center}
+
 	
 The main difference between Algorithm~\ref{alg:DCF} and Algorithm~\ref{alg:ECA}, and therefore between CSMA/CA and CSMA/ECA$_{\text{Hys+FS}}$ is that the latter uses a deterministic backoff after a successful transmission. This difference is highlighted at line~\ref{randomBackoff} and line~\ref{deterministicBackoff} of Algorithms~\ref{alg:DCF} and~\ref{alg:ECA}, respectively.
 
@@ -115,14 +123,14 @@ Having a big deterministic backoff increases the time between successful transmi
 
 	\begin{figure}[t!]
 	\centering
-		\includegraphics[width=0.7\linewidth, angle=-90]{figures/throughput-perfectChannel.eps}
+		\includegraphics[width=0.5\linewidth, angle=-90]{figures/throughput-perfectChannel.eps}
 		\caption{Average aggregate throughput ($CW_{\min}=32$)\cite{sanabria2014high}}
 		\label{fig:CAvsECA}
 	\end{figure}
 	
 	\begin{figure}[t!]
 	\centering
-		\includegraphics[width=0.7\linewidth, angle=-90]{figures/collisions-perfectChannel.eps}
+		\includegraphics[width=0.5\linewidth, angle=-90]{figures/collisions-perfectChannel.eps}
 		\caption{Average aggregate number of collision slots ($CW_{\min}=32$)\cite{sanabria2014high}}
 		\label{fig:col-CAvsECA}
 	\end{figure}
@@ -138,7 +146,7 @@ Figure~\ref{fig:scheduleReset1} shows the slots between the transmissions of a c
 
 	\begin{figure}[t!]
 	\centering
-		\includegraphics[width=\linewidth]{figures/scheduleReset.pdf}
+		\includegraphics[width=0.7\linewidth]{figures/scheduleReset.pdf}
 		\caption{Example of the Schedule Reset mechanism (extracted from~\cite{sanabria2014high})}
 		\label{fig:scheduleReset1}
 	\end{figure}
@@ -149,7 +157,7 @@ It is possible to configure Schedule Reset in two modes, namely \emph{conservati
 
 \begin{figure}[tb]
 	\centering
-		\includegraphics[width=0.7\linewidth, angle=-90]{figures/stickEv-throughput-overallOnly.eps}
+		\includegraphics[width=0.5\linewidth, angle=-90]{figures/stickEv-throughput-overallOnly.eps}
 		\caption{Average throughput and collisions with different levels of stickiness for CSMA/ECA$_{\text{QoS}}$ in non-saturation conditions (as explained in Section~\ref{subsect:simParams})}
 		\label{fig:stickEv-throughput-overallOnly}
 	\end{figure}
@@ -167,7 +175,7 @@ Nevertheless, AIFS and TXOP are not fit for multiple CSMA/ECA$_{\text{Hys+FS}}$ 
 
 	\begin{figure}[tb]
 	\centering
-		\includegraphics[width=\linewidth]{figures/AIFSwithECA.eps}
+		\includegraphics[width=0.7\linewidth]{figures/AIFSwithECA.eps}
 		\caption{Example temporal evolution of CSMA/ECA$_{\text{Hys+FS}}$ with two ACs using AIFS resulting in a virtual collision. Only considering AIFSN values of 2 and 4, $B_{\text{d}}$ of 4 and 8 for AC1 and AC2 respectively}
 		\label{fig:AIFSinECA}
 	\end{figure}
@@ -184,7 +192,7 @@ Still on Figure~\ref{fig:ecaQoS}, the second outline indicates a collision betwe
 
 	\begin{figure*}[tb]
 	\centering
-		\includegraphics[width=0.9\linewidth]{figures/csma-eca-hew-oldScheme-fixed.eps}
+		\includegraphics[width=\linewidth]{figures/csma-eca-hew-oldScheme-fixed.eps}
 		\caption{An example of the temporal evolution of CSMA/ECA$_{\text{QoS}}$ in saturation ($CW_{\min}[\text{AC1,AC2}]=[8,16]$; $m[\text{AC1,AC2}]=[5,5]$)}
 		\label{fig:ecaQoS}
 	\end{figure*}
@@ -200,7 +208,9 @@ CSMA/ECA$_{\text{QoS}}$ eliminates VCs by picking a $B[\text{AC}]$ that is not e
 
 %Nevertheless, because CSMA/ECA$_{\text{QoS}}$ ACs use a deterministic backoff after successful transmissions the selected $B[\text{AC3}]$ will eventually collide with AC1's next sixth successful transmission.
 
-	\begin{algorithm}[t]
+\begin{center}
+\begin{minipage}{0.7\linewidth}
+	\begin{algorithm}[H]
 		$AC:=4$\tcp*[l]{number of Access Categories}
 		$CW_{\min}[AC]$\tcp*[l]{$CW_{\min}$ for all ACs}
 		$B_{\text{d}}[AC]$\tcp*[l]{$B_{\text{d}}$ for all ACs}
@@ -235,6 +245,8 @@ CSMA/ECA$_{\text{QoS}}$ eliminates VCs by picking a $B[\text{AC}]$ that is not e
 		\caption{Smart Backoff: eliminating Virtual Collisions in CSMA/ECA$_{\text{QoS}}$}
 		\label{alg:smartBackoff}
 	\end{algorithm}
+\end{minipage}
+\end{center}
 
 What results from Algorithm~\ref{alg:smartBackoff} is a Smart Backoff counter that will not cause a VC on the next transmission attempts.
 
@@ -257,7 +269,7 @@ What results from Algorithm~\ref{alg:smartBackoff} is a Smart Backoff counter th
 
 	\begin{figure}[tb]
 	\centering
-		\includegraphics[width=0.8\linewidth]{figures/smartBackoff1.pdf}
+		\includegraphics[width=0.5\linewidth]{figures/smartBackoff1.pdf}
 		\caption{Four AC backoff counters in a CSMA/ECA$_{\text{QoS}}$ node with $B_{\text{d}}[4]=[4,8,16,16]$. After a VC or collision, the new random backoff counter must not be equal to any other AC's counter}
 		\label{fig:smartBackoff1}
 	\end{figure}
