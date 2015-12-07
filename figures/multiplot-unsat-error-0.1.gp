@@ -1,3 +1,4 @@
+#!/usr/local/bin/gnuplot
 set termopt enhanced
 set term postscript enhanced color dashed
 set out "multiplot-unsat-error-0-1.eps"

@@ -9,7 +9,7 @@
 	
 Carrier Sense Multiple Access with Enhanced Collision Avoidance~\cite{sanabria2014high, research2standards} is able to build collision-free schedules by using a deterministic backoff after successful transmissions. That is, if all saturated contenders are able to perform a successful transmission and then pick a deterministic backoff, they will not collide among each other in future transmissions.
 	
-To attempt a transmission, stations generate a random backoff $B\leftarrow\mathcal{U}[0,CW_{\min}-1]$, just as in DCF. Every passing empty slot decrements $B$ in one. When $B=0$, the station will attempt a transmission. If the transmission fails, the node will increment its backoff stage $k\in[0,m]$ in one (where $m$ is the maximum backoff stage of typical value $m=5$) and use another random backoff $B\leftarrow\mathcal{U}[0,CW(k)-1]$; where $CW(k)=2^{k}CW_{\min}$ is the contention window at backoff stage $k$. Otherwise, the successful station will then pick a deterministic backoff for its next transmission, $B_{\text{d}}\leftarrow \lceil CW_{\min}/2\rceil-1$. This value of $B_{\text{d}}$ is roughly equal to the expectation of a random backoff at the same backoff stage ($k=0$, in this case), making it fair and compatible with CSMA/CA stations~\cite{research2standards}.
+When a packet arrives at an empty MAC queue, stations generate a random backoff $B\leftarrow\mathcal{U}[0,CW_{\min}-1]$, just as in DCF. Every passing empty slot decrements $B$ in one. When $B=0$, the station will attempt a transmission. If the transmission fails, the node will increment its backoff stage $k\in[0,m]$ in one (where $m$ is the maximum backoff stage of typical value $m=5$) and use another random backoff $B\leftarrow\mathcal{U}[0,CW(k)-1]$; where $CW(k)=2^{k}CW_{\min}$ is the contention window at backoff stage $k$. Otherwise, the successful station will then pick a deterministic backoff for its next transmission, $B_{\text{d}}\leftarrow \lceil CW_{\min}/2\rceil-1$. This value of $B_{\text{d}}$ is roughly equal to the expectation of a random backoff at the same backoff stage ($k=0$, in this case), making it fair and compatible with CSMA/CA stations~\cite{research2standards}.
 
 \subsection{Supporting many more contenders with Hysteresis, Fair Share and the Schedule Reset mechanism}\label{scheduleReset}
 
@@ -116,14 +116,14 @@ Having a big deterministic backoff increases the time between successful transmi
 	\begin{figure}[t!]
 	\centering
 		\includegraphics[width=0.7\linewidth, angle=-90]{figures/throughput-perfectChannel.eps}
-		\caption{Average aggregated throughput ($CW_{\min}=32$)\cite{sanabria2014high}}
+		\caption{Average aggregate throughput ($CW_{\min}=32$)\cite{sanabria2014high}}
 		\label{fig:CAvsECA}
 	\end{figure}
 	
 	\begin{figure}[t!]
 	\centering
 		\includegraphics[width=0.7\linewidth, angle=-90]{figures/collisions-perfectChannel.eps}
-		\caption{Average aggregated number of collision slots ($CW_{\min}=32$)\cite{sanabria2014high}}
+		\caption{Average aggregate number of collision slots ($CW_{\min}=32$)\cite{sanabria2014high}}
 		\label{fig:col-CAvsECA}
 	\end{figure}
 
@@ -194,7 +194,7 @@ The third outline in Figure~\ref{fig:ecaQoS} indicates an VC in STA-1, which is 
 \subsection{Collisions and Virtual Collisions-free operation using Smart Backoff}\label{ECAqosCollisionFree}
 Consider a complete schedule of length $C=2^{m}CW_{\min}$, and $m=5$. With CSMA/ECA$_{\text{Hys+FS}}$ and a single AC it is possible to allocate a collision-free transmission slot for up to $C/2=512$ contenders (the highest $B_{\text{d}}+1$ for AC Legacy in Table~\ref{tab:ecaQosParams}). Nevertheless, with CSMA/ECA$_{\text{QoS}}$ and all ACs in saturation each contender mimics the behaviour of four saturated nodes (one for each AC). This means that the total number of supported collision-free contenders will be reduced in order to provide a transmission slot for all the ACs in the network. If all the ACs are in saturation, i.e., have a packet to transmit, CSMA/ECA$_{\text{QoS}}$ can provide collision-free operation for up to $2^{m[\text{VO}]}CW_{\min}[\text{VO}]/2=8$ contenders, where $m[\text{VO}]$ is the maximum backoff stage of the AC with the smallest $CW_{\max}$. Even-though Table~\ref{tab:ecaQosParams} provides CSMA/ECA$_{\text{QoS}}$'s default contention parameters, these will be adjusted in Section~\ref{sim:results} in order to support more contenders while in saturation.
 
-VCs in CSMA/ECA$_{\text{QoS}}$ force ACs to defer their transmissions using a random backoff. Therefore, VCs can disrupt any existent collision-free schedule in CSMA/ECA$_{\text{QoS}}$, wasting channel time recovering from collisions and degrading the overall throughput. Given that all AC's backoff counters are known to the contender, there is nothing preventing it from using this information to avoid future VCs.
+VCs in CSMA/ECA$_{\text{QoS}}$ force lower priority ACs to defer their transmissions using a random backoff. Therefore, VCs can disrupt any existent collision-free schedule in CSMA/ECA$_{\text{QoS}}$, wasting channel time recovering from collisions and degrading the overall throughput. Given that all AC's backoff counters are known to the contender, there is nothing preventing it from using this information to avoid future VCs.
 
 CSMA/ECA$_{\text{QoS}}$ eliminates VCs by picking a $B[\text{AC}]$ that is not equal to any of the other AC's counters. This is exemplified in Figure~\ref{fig:smartBackoff1}. The figure shows a contender with four ACs and $B_{\text{d}}[4]=[4,8,16,16]$, for AC1 to AC4 respectively. AC1 effectively transmits, but AC3 suffers from a VC. It then selects a random backoff, $B[\text{AC3}]=24$, which is different from any other AC's counters but do not consider the deterministic backoff selected by successful ACs. To eliminate future VCs in CSMA/ECA$_{\text{QoS}}$ the successes of other ACs's transmissions should also be taken into account. This is achieved by selecting a number whose absolute difference with each of the other AC's counters is not a multiple of each comparison's smallest deterministic backoff. Algorithm~\ref{alg:smartBackoff} shows the process of selecting what is referred to as a \emph{Smart Backoff} in CSMA/ECA$_{\text{QoS}}$. It shows four ACs, although it can used to eliminate VCs with as many ACs as needed. Smart Backoff is used instead of a random backoff in CSMA/ECA$_{\text{QoS}}$.
 

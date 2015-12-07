@@ -3,8 +3,9 @@ In order to test the traffic differentiation capabilities of CSMA/ECA$_{\text{Qo
 	\begin{itemize}
 		\item Unspecified parameters follow the IEEE 802.11n ($2.4$~GHz) standard.
 		\item All nodes can be assumed to be in communication range with each other.
-		\item Not using Request-to-Send (RTS) or Clear-to-Send (CTS) messages.
-		\item Collisions are assumed to take as much channel time as successful transmissions.
+		\item Not using Request-to-Send (RTS) or Clear-to-Send (CTS) messages.%
+%		\item Collisions are assumed to take as much channel time as successful transmissions.
+		\item Aggressive Schedule Reset is used, with $\gamma=1$.
 	\end{itemize}
 
 Additionally, Table~\ref{tab:mac-params} provides information about relevant PHY and MAC parameters used in the simulator.
@@ -44,7 +45,7 @@ Additionally, Table~\ref{tab:mac-params} provides information about relevant PHY
 			\hline
 			BK		       &	32				&		1024		  & 		5	&			15		        &		511\\
 			BE		       &	32				&		1024		  &		5	&			15		        &		511\\
-			VI		       &	16				&		512		  & 		5	&			7		        &		255\\
+			VI		       &	16				&		512		  & 		5	&			7		     		   &		255\\
 			VO		       &	8				&		256		  & 		5	&			3		        &		127\\
 			Legacy	       &	32				&		1024		  & 		5	&			15		        &		511\\
 			\hline
@@ -55,11 +56,11 @@ Apart from the assumptions presented above, the following provide details about 
 
 \subsection{Simulation parameters}\label{subsect:simParams}
 \subsubsection{Traffic conditions}
-There are two main scenarios regarding traffic generation in a node. The \emph{saturated} traffic condition refers to a node that always has a packet for transmission in its MAC queue. On the other hand, a \emph{non-saturated} node  can also empty its MAC queue and withdraw from the channel contention. These states do not fall far from reality, for instance, a node might be in saturation while it is performing a file transfer. But if instead the node is only uploading a short file, does nothing for a period of time and then continues to perform a voice call over the network, its traffic will be considered to be non-saturated over that period of time.
+There are two main scenarios regarding traffic generation in a node. The \emph{saturated} traffic condition refers to a node that always has a packet for transmission in its MAC queue. On the other hand, a \emph{non-saturated} node empties its MAC queue and withdraw from the channel contention. These states do not fall far from reality, for instance, a node might be in saturation while it is performing a file transfer. But if instead the node is only uploading a short file, does nothing for a period of time and then continues to perform a voice call over the network, its traffic will be considered to be non-saturated over that period of time.
 
-In our simulator we mimic this behaviour by defining a packet arrival rate ($\Delta\text{P}$). To simulate a saturated network, for instance, we set $\Delta\text{P}$ in every node to the channel capacity. If non-saturated traffic is the goal, $\Delta\text{P}$ will be set to a value way below the system maximum aggregated throughput in order to induce periods of inactivity upon each node. After extensive tests, $\Delta\text{P}=2\text{Mbps}$ has proved to provide satisfactory results.
+In our simulator we mimic this behaviour by defining a packet arrival rate ($\Delta\text{P}$). To simulate a saturated network, for instance, we set $\Delta\text{P}$ in every node to the channel capacity. If non-saturated traffic is the goal, $\Delta\text{P}$ will be set to a value way below the system maximum aggregate throughput in order to induce periods of inactivity upon each node. After extensive tests, $\Delta\text{P}=2\text{Mbps}$ was chosen.
 
-The performance in non-saturation for EDCA and CSMA/ECA$_{\text{QoS}}$ will be greatly dependent on the share of $\Delta\text{P}$ each AC gets, that is, the percentage of generated traffic that is going to be assigned to each AC. These shares, denoted $\Delta\text{P}_{\text{AC}}$ are distributed in the following way: $\Delta\text{P}_{\text{BK}}=0.4\Delta\text{P}$, $\Delta\text{P}_{\text{BE}}=0.3\Delta\text{P}$, $\Delta\text{P}_{\text{VI}}=0.15\Delta\text{P}$ and $\Delta\text{P}_{\text{VO}}=0.15\Delta\text{P}$. These values comply with the desired scenario.
+The performance in non-saturation for EDCA and CSMA/ECA$_{\text{QoS}}$ will be greatly dependent on the share of $\Delta\text{P}$ each AC gets, that is, the percentage of generated traffic that is going to be assigned to each AC. These shares, denoted $\Delta\text{P}_{\text{AC}}$ are distributed in the following way: $\Delta\text{P}_{\text{BK}}=0.4\Delta\text{P}$, $\Delta\text{P}_{\text{BE}}=0.3\Delta\text{P}$, $\Delta\text{P}_{\text{VI}}=0.15\Delta\text{P}$ and $\Delta\text{P}_{\text{VO}}=0.15\Delta\text{P}$.
 
 	
 \subsubsection{Channel errors}
@@ -75,39 +76,40 @@ In this work we propose two main scenarios: saturation and non-saturation. The n
 \begin{figure*}[tb]
 	\centering
 		\includegraphics[width=0.55\linewidth,angle = -90]{figures/multiplot-sat-perfect.eps}
-		\caption{Average Aggregated Throughput and Collisions for a) EDCA, b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ with parameters from Table~\ref{tab:newQoSparams} in saturation}
+		\caption{Average aggregate Throughput and Collisions for a) EDCA, b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ with parameters from Table~\ref{tab:newQoSparams} in saturation}
 		\label{fig:multiplotSat}
 \end{figure*}
 
 \begin{figure*}[tb]
 	\centering
 		\includegraphics[width=0.55\linewidth,angle = -90]{figures/multiplot-unsat-error-0-1.eps}
-		\caption{Average Aggregated Throughput, Collisions and Time Between Successful Transmissions for a) EDCA and b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ network (without Fair Share) in non-saturation}
+		\caption{Average aggregate Throughput, Collisions and Time Between Successful Transmissions for a) EDCA and b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ network (without Fair Share) in non-saturation}
 		\label{fig:multiplotUnsat}
 \end{figure*}
 	
 \begin{figure*}[t]
 	\centering
 		\includegraphics[width=0.55\linewidth,angle = -90]{figures/multiplot-combined-unsat-error-0-1.eps}
-		\caption{Average aggregated throughput, Collisions and time between successful transmissions for a) EDCA nodes and b) CSMA/ECA$_{\text{QoS}}$ nodes and c) CSMA/ECA$_{\text{QoS}}$ network (without Fair Share) nodes in a 50\%-50\% mixed non-saturated network}
+		\caption{Average aggregate throughput, Collisions and time between successful transmissions for a) EDCA nodes and b) CSMA/ECA$_{\text{QoS}}$ nodes and c) CSMA/ECA$_{\text{QoS}}$ network (without Fair Share) nodes in a 50\%-50\% mixed non-saturated network}
 		\label{fig:multiplotCombinedUnsat}
 \end{figure*}
 
 \subsection{Simulation Results}\label{sim:results}
 \subsubsection{System throughput and collisions}
-\begin{itemize}
-\item\underline{Saturation:} Figure~\ref{fig:multiplotSat} gathers the simulation results for average aggregated throughput and collisions in a saturated network. Referring to EDCA results as Figure~\ref{fig:multiplotSat}-a,  it shows that the AC with the highest priority, AC[VO]\footnote{Starting at this point, ACs will be referred to as AC[\emph{x}], where `\emph{x}' is the abbreviation of the AC name, as in Table~\ref{tab:prioritiesMap}.}, achieves greater throughput than the others. This is a direct consequence of effective traffic differentiation in EDCA. The lower row of Figure~\ref{fig:multiplotSat} shows the total number of collisions as well as the average percentage of collisions suffered by each AC. 
 
-Figure~\ref{fig:multiplotSat}-a also shows that AC[BK] is not able to achieve significant throughput for a high number of contenders. This is because its transmission attempts are being deferred in order to serve the high priority ACs. Furthermore, EDCA collisions show that at around 30 contenders AC[BE] also starts to get its transmission attempts deferred, easing the contention process for high priority ACs. This is the main reason of the overall throughput increase seen in Figure~\ref{fig:multiplotSat}-a at around 30 nodes.
+\paragraph{Saturation} Figure~\ref{fig:multiplotSat} gathers the simulation results for average aggregate throughput and collisions in a saturated network. Figure~\ref{fig:multiplotSat}-a shows the results referring to EDCA. It shows that the AC with the highest priority, AC[VO]\footnote{Starting at this point, ACs will be referred to as AC[\emph{x}], where `\emph{x}' is the abbreviation of the AC name, as in Table~\ref{tab:prioritiesMap}.}, achieves greater throughput than the others. This is a direct consequence of effective traffic differentiation in EDCA. The lower row of Figure~\ref{fig:multiplotSat} shows the total number of collisions as well as the average percentage of collisions suffered by each AC. 
 
-Figure~\ref{fig:multiplotSat}-b shows the average aggregated throughput and collisions of a saturated CSMA/ECA$_{\text{QoS}}$ network using the default contention parameters (see Table~\ref{tab:ecaQosParams}). These settings do not allow the construction of collision-free schedules for many contenders. This is evidenced by the high number of collisions at around 20 contenders. Moreover, the figure shows CSMA/ECA$_{\text{QoS}}$ throughput decreasing faster than EDCA.
+Figure~\ref{fig:multiplotSat}-a also shows that AC[BK] and AC[BE] are not able to achieve significant throughput for a high number of contenders. This is because its transmission attempts are being deferred in order to serve the high priority ACs. Furthermore, EDCA collisions show that at around 30 contenders AC[BE] starts to starve, easing the contention process for high priority ACs. This is the main reason of the overall throughput increase seen in Figure~\ref{fig:multiplotSat}-a at around 30 nodes.
 
-To allow the construction of collision-free schedules, the contention parameters for CSMA/ECA$_{\text{QoS}}$ are modified to the ones shown in Table~\ref{tab:newQoSparams}. These new parameters allow the construction of larger collision-free schedules, making it possible to achieve collision-free operation with a larger number of contenders. Figure~\ref{fig:multiplotSat}-c provides throughput and collisions results with these new contention parameters. The figure shows higher throughput for a wider number of contenders, as opposed to EDCA, where it decreases rapidly as contenders join the network. Further, collisions start to increase at around 32 contenders, which is the maximum number of saturated collision-free contenders supported with the updated contention parameters. It is relevant to highlight that unlike EDCA, CSMA/ECA$_{\text{QoS}}$ is able to accommodate transmissions for every AC when there is a high number of contenders (e.g.: $N\geq 40$). In the same manner, Figure~\ref{fig:multiplotSat}-c also shows a clear reduction in the number of collisions when using CSMA/ECA$_{\text{QoS}}$.
+Figure~\ref{fig:multiplotSat}-b shows the average aggregate throughput and collisions of a saturated CSMA/ECA$_{\text{QoS}}$ network using the default contention parameters (see Table~\ref{tab:ecaQosParams}). These settings do not allow the construction of collision-free schedules for many contenders. This is evidenced by the high number of collisions at around 20 contenders. However at low number ($N\leq 8$), CSMA/ECA$_{\text{QoS}}$ is able to reach collision-free operation, achieving higher throughput than EDCA (Figure~\ref{fig:multiplotSat}-b).
+%Moreover, the figure shows CSMA/ECA$_{\text{QoS}}$ throughput decreasing faster than EDCA.
 
-The updated parameters for CSMA/ECA$_{\text{QoS}}$ (Table~\ref{tab:newQoSparams}) make a tradeoff between throughput and aggressiveness. Even-though allowing CSMA/ECA$_{\text{QoS}}$'s deterministic backoffs to grow past EDCA's default parameters increases the time between successful transmissions (as shown in the following Figure~\ref{fig:multiplotUnsat}), it prevents the starvation of low priority ACs and provide a greater overall throughput (due to a reduction in the number of collisions and the aggregation performed by Fair Share).
+To achieve collision-free operation for many more contenders, the maximum backoff stage for AC[VI] and AC[VO] in CSMA/ECA$_{\text{QoS}}$ are increased to match the other ACs, as shown in Table~\ref{tab:newQoSparams}. Figure~\ref{fig:multiplotSat}-c provides throughput and collisions results with these new contention parameters. The figure shows higher throughput for a wider number of contenders, as opposed to EDCA, where it decreases rapidly as contenders join the network. Further, collisions start to increase at around 32 contenders, which is the maximum number of saturated collision-free contenders supported with the updated contention parameters. It is relevant to highlight that unlike EDCA, CSMA/ECA$_{\text{QoS}}$ is able to accommodate transmissions for every AC when there is a high number of contenders (e.g., $N\geq 40$). In the same manner, Figure~\ref{fig:multiplotSat}-c also shows a clear reduction in the number of collisions when using CSMA/ECA$_{\text{QoS}}$.
+
+The updated parameters for CSMA/ECA$_{\text{QoS}}$ (Table~\ref{tab:newQoSparams}) make a tradeoff between throughput and aggressiveness. Even-though allowing CSMA/ECA$_{\text{QoS}}$'s deterministic backoffs to grow past EDCA's default parameters increases the time between successful transmissions (as shown in the following Figure~\ref{fig:multiplotUnsat}), it prevents the starvation of low priority ACs and provide a greater overall throughput due to a reduction in the number of collisions and the aggregation performed by Fair Share.
 
 
-\item\underline{Non-Saturation:}
+\paragraph{Non-Saturation}
 
 In the non-saturation scenario nodes in the network have $\Delta\text{P}=2$Mbps. Moreover, the shares of $\Delta\text{P}$ assigned to each AC are defined in Section~\ref{subsect:simParams}. Results are derived from simulations performed with $p_e=0.1$.
 
@@ -128,24 +130,23 @@ In the non-saturation scenario nodes in the network have $\Delta\text{P}=2$Mbps.
 		\end{tabular}
 	\end{table}
 
-Figure~\ref{fig:multiplotUnsat} shows the (from top to bottom row) average aggregated throughput, collisions and time between successful transmissions for (from left to right column) a) EDCA, b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ without Fair Share (both CSMA/ECA$_{\text{QoS}}$ results using the contention parameters presented in Table~\ref{tab:newQoSparams}). In Figure~\ref{fig:multiplotUnsat}-a, EDCA throughput keeps increasing up until one of its ACs reaches saturation due to starvation. This is the case of AC[BK] at around $N=10$. It is only at around $N=24$ where the rest of ACs get completely saturated. At this point, both the throughput and collision figures for EDCA start to resemble the ones presented in the saturation case.
+Figure~\ref{fig:multiplotUnsat} shows the (from top to bottom row) average aggregate throughput, collisions and time between successful transmissions for (from left to right column) a) EDCA, b) CSMA/ECA$_{\text{QoS}}$ and c) CSMA/ECA$_{\text{QoS}}$ without Fair Share (both CSMA/ECA$_{\text{QoS}}$ results using the contention parameters presented in Table~\ref{tab:newQoSparams}). In Figure~\ref{fig:multiplotUnsat}-a, EDCA throughput keeps increasing up until one of its ACs reaches saturation due to starvation. This is the case of AC[BK] at around $N=10$. It is only at around $N=24$ where the rest of ACs get completely saturated. At this point, both the throughput and collision figures for EDCA start to resemble the ones presented in the saturation case. Table~\ref{tab:satPoints} shows the saturation points for each protocol.
 
 In Figure~\ref{fig:multiplotUnsat}-b at $N\leq 14$, contenders join and withdraw from the contention more frequently. This causes a disruption of any existing collision-free schedule, which is represented by the increase in collisions at $N=14$. Once ACs get saturated, more periods of collision-free operation are achieved, accounting for the subsequent reduction in the total number of collisions.
 
 Even-though $p_e$ induces retransmissions that degrade the performance, throughput gains and collision reductions with CSMA/ECA$_{\text{QoS}}$ are maintained. This is mainly due to the level of stickiness used and the additional increase provided by the Schedule Reset mechanism (see Section~\ref{scheduleReset}).
 
-\end{itemize}
-
 \subsubsection{Average time between successful transmissions}
-This metric refers to the average time between two consecutive successful transmissions of each AC. Figure~\ref{fig:multiplotUnsat}-a shows that despite preventing transmissions from low priority ACs, AC[VO] and AC[VI] maintain a fairly low metric. This is specially relevant for time sensitive applications, like voice or video calls. Nevertheless, it implies that while high priority ACs are saturated, there is no effective throughput for other kind of traffic.
+This metric refers to the average time between two consecutive successful transmissions of each AC. Figure~\ref{fig:multiplotUnsat}-a shows that EDCA provides a fairly low metric for AC[VO] and AC[VI] as a consequence of  starving low priority ACs. This is specially relevant for time sensitive applications, like voice or video calls. Nevertheless, it implies that while high priority ACs are saturated, there is no effective throughput for other kind of traffic.
 
-On the other hand, as shown in Figure~\ref{fig:multiplotUnsat}-b, CSMA/ECA$_{\text{QoS}}$ takes more time between successful transmissions. This is partly because of the packet aggregation performed by Fair Share, which make transmissions longer. Furthermore, as low priority ACs are also transmitting, these also contribute to the increase in the time between successful transmissions. 
+On the other hand, as shown in Figure~\ref{fig:multiplotUnsat}-b, CSMA/ECA$_{\text{QoS}}$ takes more time between successful transmissions for AC[VI] and AC[VO]. This is partly because of the packet aggregation performed by Fair Share, which makes transmissions longer. However, low priority AC do not starve as they are able to perform successful transmissions even for a high number of contenders. If Fair Share is deactivated in CSMA/ECA$_{\text{QoS}}$, the overall throughput might get negatively affected (no aggregation is performed), but the time between successful transmissions is reduced to EDCA levels as shown in Figure~\ref{fig:multiplotUnsat}-c, while the throughput is still higher.
 
-Although EDCA keeps the time between successful transmissions very low, it does so by almost preventing low priority ACs from accessing the channel. If Fair Share is deactivated in CSMA/ECA$_{\text{QoS}}$, the overall throughput might get negatively affected (no aggregation is performed), but the time between successful transmissions will be reduced, as shown in Figure~\ref{fig:multiplotUnsat}-c.
+%Although EDCA keeps the time between successful transmissions very low, it does so by almost preventing low priority ACs from accessing the channel. 
 
 Table~\ref{tab:satPoints} shows the saturation points for each protocol. That is, the number of nodes at which the network gets saturated. As it can be seen in the table, CSMA/ECA${\text{QoS}}$ saturates at higher number of contenders. This translates in an enhanced ability to provide higher throughput for a wider number of users than EDCA.
 
 \subsubsection{Coexistence with EDCA}
+
 \begin{figure}[t!]
 	\centering
 		\includegraphics[width=1.1\linewidth,angle = -90]{figures/legacyEvolution.eps}
@@ -153,9 +154,9 @@ Table~\ref{tab:satPoints} shows the saturation points for each protocol. That is
 		\label{fig:legacyEvolution}
 \end{figure}
 	
-The followings are extracted from simulations performed with a network setup composed of 50\% EDCA nodes and 50\% CSMA/ECA$_{\text{QoS}}$ in non-saturation and $p_e=0.1$. Figure~\ref{fig:multiplotCombinedUnsat} shows (from first to last row) average aggregated throughput, collisions and average time between successful transmissions for each group of nodes (from left to right column): a) EDCA nodes, b)CSMA/ECA$_{\text{QoS}}$ nodes and an additional test with c) CSMA/ECA$_{\text{QoS}}$ without Fair Share (w/o FS) nodes. The Fair Share mechanism is deactivated in order to reduce the time between successful transmissions.
+The followings are extracted from simulations performed with a network setup composed of 50\% EDCA nodes and 50\% CSMA/ECA$_{\text{QoS}}$ in non-saturation and $p_e=0.1$. Figure~\ref{fig:multiplotCombinedUnsat} shows (from first to last row) average aggregate throughput, collisions and average time between successful transmissions for each group of nodes (from left to right column): a) EDCA nodes, b) CSMA/ECA$_{\text{QoS}}$ nodes and an additional test with c) CSMA/ECA$_{\text{QoS}}$ without Fair Share (w/o FS) nodes. The Fair Share mechanism is deactivated in order to reduce the time between successful transmissions.
 
-%Figure~\ref{fig:throughputCombined-vs-EDCA} shows the aggregated throughput gain when compared against a 100\% EDCA network with the same traffic and error parameters. The collision-free periods experienced by the CSMA/ECA$_{\text{QoS}}$ nodes account for the throughput increase seen in the figure. Furthermore, as Figure~\ref{fig:collisionsCombined-vs-EDCA} shows, the overall collisions are reduced for the same reason.
+%Figure~\ref{fig:throughputCombined-vs-EDCA} shows the aggregate throughput gain when compared against a 100\% EDCA network with the same traffic and error parameters. The collision-free periods experienced by the CSMA/ECA$_{\text{QoS}}$ nodes account for the throughput increase seen in the figure. Furthermore, as Figure~\ref{fig:collisionsCombined-vs-EDCA} shows, the overall collisions are reduced for the same reason.
 
 %THINK THIS. FIND AN EXPLANATION!!!!!!!! 
 %hint 1: the time between successful transmissions of CSMA/ECA stations in this mixed network, is lower than EDCA (for high number of nodes). Further, if collisions are high, this means that the contention parameters of EDCA is not able to support many contenders, killing EDCA stations's throughput.
@@ -164,7 +165,7 @@ The followings are extracted from simulations performed with a network setup com
 
 %FINAL HINT: At low number of nodes, EDCA has lower delay and higher throughput becasue it is much more aggressive in the traffic differentiation, prioritising ACs and being very aggressive with its contention parameters. In the mixed network, CSMA/ECAqos nodes elevate the average delay too much due to its less aggresive contention. At high number of nodes the mixed network goes worst than EDCA, but this is mostly due to EDCA nodes, which elevate the average collisions, delay and decrement the overall throughput.
 
-Even-though there are periods of collision-free operation, which are evidenced by the higher throughput experienced by CSMA/ECA$_{\text{QoS}}$ nodes in Figure~\ref{fig:multiplotCombinedUnsat}-b, Figure~\ref{fig:multiplotCombinedUnsat}-c shows that the time between successful transmissions can be further reduced by not using FS. Deactivating Fair Share causes a degradation in the overall throughput and an increase in the number of collisions, mostly due to reaching the saturation point faster (at lower $N$). Nevertheless, Figure~\ref{fig:multiplotCombinedUnsat}-c shows that CSMA/ECA$_{\text{QoS}}$ w/o FS nodes still experience higher throughput, lower collisions and similar time between successful transmissions than EDCA nodes, both in Figure~\ref{fig:multiplotCombinedUnsat}-a and in a EDCA-only network, shown in Figure~\ref{fig:multiplotUnsat}-a.
+As shown in Figure~\ref{fig:multiplotCombinedUnsat}-b, CSMA/ECA$_{\text{QoS}}$ nodes achieve greater throughput. Even-though there are periods of collision-free operation, Figure~\ref{fig:multiplotCombinedUnsat}-c shows that the time between successful transmissions can be further reduced by not using FS. Deactivating Fair Share causes a degradation in the overall throughput and an increase in the number of collisions, mostly due to reaching the saturation point faster (at lower $N$). Nevertheless, Figure~\ref{fig:multiplotCombinedUnsat}-c shows that CSMA/ECA$_{\text{QoS}}$ w/o FS nodes still experience higher throughput, lower collisions and similar time between successful transmissions than EDCA nodes, both in Figure~\ref{fig:multiplotCombinedUnsat}-a and in an EDCA-only network, shown in Figure~\ref{fig:multiplotUnsat}-a.
 
 %it still offers higher throughput  a metric of time between successful transmissions similar to
 
@@ -172,9 +173,9 @@ Even-though there are periods of collision-free operation, which are evidenced b
 
 EDCA takes a much more aggressive approach towards providing traffic differentiation, mostly due to its tight contention parameters and AIFS. On the other hand, even at low number of contenders EDCA's tight contention parameters provoke an increase in the number of collisions. Furthermore, it starves low priority ACs (like BK and BE); increasing the delay consequently (see Figure~\ref{fig:multiplotCombinedUnsat}-a).
 
-Figure~\ref{fig:legacyEvolution} shows the a) overall, b) AC[BK], and c) AC[VO] throughput for a non-saturated mixed network with $p_e=0.1$ and 20 contenders as the percentage of EDCA nodes increases from 0 to 100\%. Figure~\ref{fig:legacyEvolution}-a shows that both protocols' aggregated throughput decreases as a consequence of the coexistence. Nevertheless, CSMA/ECA$_{\text{QoS}}$ nodes aggregated throughput is higher for a larger proportion of EDCA nodes than the other way around. This is mainly because CSMA/ECA$_{\text{QoS}}$ nodes do not starve low priority ACs.
+Figure~\ref{fig:legacyEvolution} shows the a) overall, b) AC[BK], and c) AC[VO] throughput for a non-saturated mixed network with $p_e=0.1$ and 20 contenders as the percentage of CSMA/ECA$_{\text{QoS}}$ nodes increases from 0 to 100\%. Figure~\ref{fig:legacyEvolution}-a shows that the overall throughput of the system increases with the proportion of CSMA/ECA$_{\text{QoS}}$ nodes. This is mainly because CSMA/ECA$_{\text{QoS}}$ nodes do not starve low priority ACs and keep high priority ACs throughput unaffected.
 
-AC[BK] for EDCA nodes in Figure~\ref{fig:legacyEvolution}-b shows little variation. As seen in Figure~\ref{fig:multiplotUnsat}-a, at this number of contenders ($N=20$) AC[BK] has almost no throughput due to starvation by EDCA. On the other hand, for CSMA/ECA$_{\text{QoS}}$ this low priority AC shows higher throughput even for high percentages of EDCA nodes ($<90\%$).
+AC[BK] for EDCA nodes in Figure~\ref{fig:legacyEvolution}-b shows little variation. As seen in Figure~\ref{fig:multiplotUnsat}-a, at this number of contenders ($N=20$) AC[BK] has almost no throughput due to starvation by EDCA. On the other hand, for CSMA/ECA$_{\text{QoS}}$ this low priority AC shows higher throughput even for low percentages of CSMA/ECA$_{\text{QoS}}$ nodes ($N>10\%$).
 
-Figure~\ref{fig:legacyEvolution}-c, showing AC[VO]'s throughput, is consistent with Figure~\ref{fig:legacyEvolution}-a, that is, it is possible to observe a throughput degradation due to the coexistence in both protocol. Nevertheless, AC[VI] throughput degrades almost at the same rate for both protocols (same slope around $\pm 0.6$).
+Figure~\ref{fig:legacyEvolution}-c, showing AC[VO]'s throughput, is consistent with Figure~\ref{fig:legacyEvolution}-a, that is, it is possible to observe a throughput degradation due to the coexistence in both protocols. Nevertheless, AC[VI] throughput degrades almost at the same rate for both protocols (same slope around $\pm 0.6$).
 
